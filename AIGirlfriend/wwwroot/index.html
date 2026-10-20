@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nova</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --bubble-me: #3b5bdb;
+    --bubble-her: #232833;
+    --bubble-pro: #26304a;
+    --text: #e7e9ee;
+    --muted: #8b93a5;
+    --line: #262b36;
+    --accent: #6c8cff;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    display: flex; flex-direction: column;
+    max-width: 760px; margin: 0 auto;
+    height: 100dvh;
+  }
+
+  /* ---------- Baslik ---------- */
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    flex: 0 0 auto;
+  }
+
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, #6c8cff, #b06cff);
+    display: grid; place-items: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+    flex: 0 0 auto;
+  }
+
+  .who { flex: 1; min-width: 0; }
+  .who b { display: block; font-size: 15px; }
+
+  /* Baslikta Nova'nin yanindaki mekan */
+  .titlerow { display: flex; align-items: baseline; gap: 8px; }
+  .titlerow b { display: inline; }
+  #place {
+    font-size: 12.5px; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #place::before { content: "· "; }
+  #place:empty { display: none; }
+  .who small { color: var(--muted); font-size: 12px; }
+
+  button {
+    font: inherit; color: var(--muted);
+    background: transparent; border: 1px solid var(--line);
+    border-radius: 8px; padding: 7px 11px; cursor: pointer;
+    font-size: 13px;
+  }
+  button:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ---------- Mesajlar ---------- */
+  #chat {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 18px 16px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .row { display: flex; }
+  .row.me { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 82%;
+    padding: 10px 13px;
+    border-radius: 16px;
+    background: var(--bubble-her);
+    line-height: 1.45;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    animation: pop .18s ease-out;
+  }
+  .row.me .bubble { background: var(--bubble-me); border-bottom-right-radius: 5px; }
+  .row.her .bubble { border-bottom-left-radius: 5px; }
+
+  /* Proaktif mesaj: Nova'nin kendi baslattigi mesaj.
+     Kullanici balonundan AYRI olsun ki karismasin. */
+  .row.pro .bubble {
+    background: var(--bubble-pro);
+    border-bottom-left-radius: 5px;
+    border-left: 2px solid var(--accent);
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .meta {
+    text-align: right; font-size: 10.5px; color: var(--muted);
+    margin: 2px 4px 0;
+  }
+
+  /* ---------- Yaziyor efekti ---------- */
+  .dots { display: flex; gap: 4px; padding: 4px 2px; }
+  .dots i {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--muted);
+    animation: blink 1.3s infinite ease-in-out;
+  }
+  .dots i:nth-child(2) { animation-delay: .2s; }
+  .dots i:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink {
+    0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+    30%           { opacity: 1;  transform: translateY(-4px); }
+  }
+
+  /* ---- Hata ---- */
+  .bubble.err { background: #5c2430; color: #ffd9de; }
+
+  /* ---------- Yazma alani ---------- */
+  footer {
+    flex: 0 0 auto;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  form { display: flex; gap: 9px; align-items: flex-end; }
+
+  textarea {
+    flex: 1; resize: none;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 11px 13px; font: inherit; font-size: 15px;
+    max-height: 120px; min-height: 42px;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+
+  .send {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 12px; padding: 0 17px; height: 42px;
+    font-weight: 600; cursor: pointer; flex: 0 0 auto;
+  }
+  .send:disabled { opacity: .4; cursor: default; }
+
+  .hint {
+    text-align: center; color: var(--muted);
+    font-size: 11px; margin-top: 7px;
+  }
+
+  @media (max-width: 480px) {
+    .bubble { max-width: 88%; font-size: 15px; }
+    header { padding: 11px 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="avatar">N</div>
+  <div class="who">
+    <div class="titlerow">
+      <b>Nova</b>
+      <span id="place"></span>
+    </div>
+    <small id="status">connecting...</small>
+  </div>
+  <button id="reset" title="Yeni sohbet">New chat</button>
+</header>
+
+<div id="chat"></div>
+
+<footer>
+  <form id="form" autocomplete="off">
+    <textarea id="input" rows="1" placeholder="Say something..."></textarea>
+    <button type="submit" class="send" id="send">Send</button>
+  </form>
+  <div class="hint">Enter to send &middot; Shift+Enter for new line</div>
+</footer>
+
+<script>
+  const chat   = document.getElementById('chat');
+  const form   = document.getElementById('form');
+  const input  = document.getElementById('input');
+  const send   = document.getElementById('send');
+  const reset  = document.getElementById('reset');
+  const status = document.getElementById('status');
+
+  let busy = false;
+
+  // ---------- Yardimcilar ----------
+  function scrollDown() {
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function addRow(text, who, meta) {
+    const row = document.createElement('div');
+    row.className = 'row ' + who;
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;          // textContent = XSS korumasi
+    row.appendChild(bubble);
+
+    chat.appendChild(row);
+
+    if (meta) {
+      const m = document.createElement('div');
+      m.className = 'meta';
+      m.textContent = meta;
+      chat.appendChild(m);
+    }
+
+    scrollDown();
+    return row;
+  }
+
+  function showTyping() {
+    const row = document.createElement('div');
+    row.className = 'row her';
+    row.id = 'typing';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = '<div class="dots"><i></i><i></i><i></i></div>';
+
+    row.appendChild(bubble);
+    chat.appendChild(row);
+    scrollDown();
+  }
+
+  function hideTyping() {
+    const t = document.getElementById('typing');
+    if (t) t.remove();
+  }
+
+  // ---------- Mesaj gonder ----------
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (busy) return;
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    addRow(text, 'me');
+    busy = true;
+    send.disabled = true;
+
+    // --- 1) "Yaziyor..." animasyonu ---
+    // Model dusunuyor (thinking), bu yuzden biraz sure alir.
+    // Bu sure zaten dogal "yazma hissi" verir, ekstra gecikme gerekmez.
+    showTyping();
+
+    // --- 2) Modelden cevabi al ---
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      hideTyping();
+
+      if (!res.ok) {
+        addRow(data.error || ('Hata: ' + res.status), 'her');
+        chat.lastChild.querySelector('.bubble').classList.add('err');
+        return;
+      }
+
+      addRow(data.reply, 'her', data.ms + ' ms');
+    } catch (err) {
+      hideTyping();
+      addRow(
+        'Sunucuya ulasilamadi.\n\n' +
+        'Program penceresi kapali olabilir. Yeniden baslat:\n' +
+        '  baslat-web.bat  (veya: dotnet run -- web)\n\n' +
+        'Detay: ' + err.message,
+        'her');
+      chat.lastChild.querySelector('.bubble').classList.add('err');
+    } finally {
+      busy = false;
+      send.disabled = false;
+      input.focus();
+    }
+  });
+
+  // ---------- Enter gonder, Shift+Enter yeni satir ----------
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  // Metin alani otomatik buyusun
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  // ---------- Sifirla ----------
+  reset.addEventListener('click', async () => {
+    await fetch('/api/reset', { method: 'POST' });
+    chat.innerHTML = '';
+    addRow('New chat. Say hi.', 'her');
+    input.focus();
+  });
+
+  // ---------- Mevcut mekan ----------
+  // Nova'nin su an hangi asamada oldugunu gosterir.
+  const placeEl = document.getElementById('place');
+
+  async function checkPlace() {
+    try {
+      const res = await fetch('/api/stage');
+      const d = await res.json();
+      placeEl.textContent = d.name || '';
+    } catch (e) {
+      // Sunucu kapali olabilir
+    }
+  }
+
+  // ---------- Proaktif mesaj kontrolu ----------
+  // Nova bazi zamanlar kendi basina mesaj atar.
+  // Sunucudan 15 saniyede bir soruyoruz.
+  async function checkProactive() {
+    if (busy) return;                 // kullanici mesaj bekliyorsa bekle
+    try {
+      const res = await fetch('/api/proactive');
+      const d = await res.json();
+      if (d.text) {
+        // 'pro' = proaktif balon (kullanici balonundan farkli)
+        addRow(d.text, 'pro', 'proaktif - asama ' + d.stage);
+      }
+    } catch (e) {
+      // Sunucu kapali olabilir, sessizce gec
+    }
+  }
+
+  setInterval(checkProactive, 15000);
+
+  // Mekan bilgisi de ayni dongude (her 15 sn) tazelenir
+  setInterval(checkPlace, 15000);
+  checkPlace();
+
+  // ---------- Durum kontrolu ----------
+  (async function checkHealth() {
+    try {
+      const res = await fetch('/api/health');
+      const d = await res.json();
+      status.textContent = d.ok ? ('online - ' + d.model) : 'offline';
+    } catch {
+      status.textContent = 'offline';
+    }
+  })();
+
+  addRow("Hey. I'm here. What's going on?", 'her');
+  input.focus();
+</script>
+
+</body>
+</html>

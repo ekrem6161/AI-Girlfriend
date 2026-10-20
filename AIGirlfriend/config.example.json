@@ -1,0 +1,23 @@
+{
+  "telegramBotToken": "",
+  "lmStudioBaseUrl": "http://127.0.0.1:1234",
+  "model": "gemma4abl",
+  "reasoningEffort": "none",
+  "temperature": 0.85,
+  "maxTokens": 800,
+  "maxHistoryMessages": 20,
+  "personaFile": "prompts/persona.md",
+  "stageCount": 10,
+  "stageAdvanceEveryMessages": 10,
+  "proactiveEnabled": true,
+  "proactiveQuietMinutes": 10,
+  "proactiveIntervalMinutes": 120,
+  "proactiveJitterMinutes": 15,
+  "proactiveExpiryMinutes": 5,
+  "typingIndicator": true,
+  "skipOldMessagesOnStart": true,
+  "desktopNotifications": true,
+  "notificationTitle": "Nova",
+  "webHost": "0.0.0.0",
+  "webPort": 5050
+}

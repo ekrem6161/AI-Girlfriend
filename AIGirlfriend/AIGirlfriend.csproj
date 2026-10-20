@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!--
+      net8.0-windows10.0.19041.0 : Windows bildirimlerini (WinRT) kullanmak icin.
+      Bu hedef, Windows SDK projeksiyonlarini da birlikte getirir,
+      boylece "Windows.UI.Notifications" icin NuGet paketi indirmeye
+      gerek kalmaz. (build 19041+ = Windows 10 2004 ve sonrasi)
+    -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <RootNamespace>AIGirlfriend</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
+    Web chat icin ASP.NET Core.
+    NuGet paketi indirmeye gerek yok, .NET ile birlikte gelir.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <!--
+    config.json ve persona.md program calisirken okunuyor.
+    "CopyToOutputDirectory" sayesinde bunlar "dotnet run" icin
+    derlenen klasore de kopyalanir. Boylece hangi klasorden
+    calistirirsan calistir program ayni dosyalari bulur.
+  -->
+  <ItemGroup>
+    <None Update="config.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Karakter (prompts/) ve atmosfer (atmosphere/) dosyalari.
+         Klasor yapi korunarak kopyalanir. -->
+    <None Update="prompts/**" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="atmosphere/**" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="wwwroot/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
