@@ -42,14 +42,6 @@ start conversations on its own if you go quiet for a while.
 
 ---
 
-## 📸 Screenshot
-
-> The header shows her current location, the three-dot indicator is the
-> "typing" animation, and the highlighted bubble on the left is a message she
-> started on her own.
-
----
-
 ## 🚀 Quick start
 
 ### 1. Install the model runtime
